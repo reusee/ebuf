@@ -64,7 +64,49 @@ func TestCursorWithUndoRedo(t *testing.T) {
 		t.Fatal("cursor pos")
 	}
 	b.Insert(0, []byte("foobar"))
-	pt("%d\n", *cursor)
+	if *cursor != 6 {
+		t.Fatal("cursor pos")
+	}
+
+	b = New([]byte("foobar"))
+	b.Delete(3, 3)
+	cursor = b.AddCursor(3)
+	b.Undo()
+	if *cursor != 6 {
+		t.Fatal("cursor pos")
+	}
+
+	b = New([]byte("foobar"))
+	b.Insert(3, []byte("baz"))
+	cursor = b.AddCursor(5)
+	b.Undo()
+	if *cursor != 3 {
+		t.Fatal("cursor pos")
+	}
+
+	b = New([]byte("foobarbaz"))
+	b.Delete(3, 3)
+	b.Undo()
+	cursor = b.AddCursor(5)
+	b.Redo()
+	if *cursor != 3 {
+		t.Fatal("cursor pos")
+	}
+
+	b = New([]byte("foobar"))
+	b.Insert(3, []byte("baz"))
+	b.Undo()
+	cursor = b.AddCursor(3)
+	b.Redo()
+	if *cursor != 6 {
+		t.Fatal("cursor pos")
+	}
+
+	b = New([]byte("foobarbaz"))
+	b.Delete(3, 3)
+	b.Undo()
+	cursor = b.AddCursor(9)
+	b.Redo()
 	if *cursor != 6 {
 		t.Fatal("cursor pos")
 	}
