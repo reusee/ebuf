@@ -5,7 +5,7 @@ import "github.com/reusee/rope"
 type Buffer struct {
 	States  []State
 	Current int
-	Cursors []*Cursor
+	Cursors []*int
 }
 
 type State struct {

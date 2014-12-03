@@ -23,11 +23,9 @@ func (b *Buffer) Insert(pos int, bs []byte) {
 	b.Current += 1
 	// update cursors
 	for _, cursor := range b.Cursors {
-		cursorPos := cursor.Pos[b.Current-1]
-		if cursorPos >= pos {
-			cursorPos += len(bs)
+		if *cursor >= pos {
+			*cursor += len(bs)
 		}
-		cursor.Pos[b.Current] = cursorPos
 	}
 }
 
@@ -45,23 +43,14 @@ func (b *Buffer) Delete(pos, length int) {
 	b.Current += 1
 	// update cursors
 	for _, cursor := range b.Cursors {
-		cursorPos := cursor.Pos[b.Current-1]
-		if cursorPos > pos && cursorPos < pos+length {
-			cursorPos = pos
-		} else if cursorPos >= pos+length {
-			cursorPos -= length
+		if *cursor > pos && *cursor < pos+length {
+			*cursor = pos
+		} else if *cursor >= pos+length {
+			*cursor -= length
 		}
-		cursor.Pos[b.Current] = cursorPos
 	}
 }
 
 func (b *Buffer) dropStates() {
 	b.States = b.States[:b.Current+1]
-	for _, cursor := range b.Cursors {
-		for i, _ := range cursor.Pos {
-			if i > b.Current {
-				delete(cursor.Pos, i)
-			}
-		}
-	}
 }
