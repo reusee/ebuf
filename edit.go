@@ -1,27 +1,67 @@
 package ebuf
 
-import "github.com/reusee/rope"
+const (
+	Insert = iota
+	Delete
+)
 
-type OpInsert struct {
-	Pos, Len int
-}
-
-type OpDelete struct {
-	Pos, Len int
+type Op struct {
+	Type, Pos, Len int
 }
 
 func (b *Buffer) Insert(pos int, bs []byte) {
-	r := b.Events[b.Current].(*rope.Rope).Insert(pos, bs)
-	b.Events = b.Events[:b.Current+1]
-	b.Events = append(b.Events, OpInsert{pos, len(bs)})
-	b.Events = append(b.Events, r)
-	b.Current += 2
+	r := b.States[b.Current].Rope.Insert(pos, bs)
+	b.dropStates()
+	b.States = append(b.States, State{
+		Rope: r,
+		LastOp: Op{
+			Type: Insert,
+			Pos:  pos,
+			Len:  len(bs),
+		},
+	})
+	b.Current += 1
+	// update cursors
+	for _, cursor := range b.Cursors {
+		cursorPos := cursor.Pos[b.Current-1]
+		if cursorPos >= pos {
+			cursorPos += len(bs)
+		}
+		cursor.Pos[b.Current] = cursorPos
+	}
 }
 
 func (b *Buffer) Delete(pos, length int) {
-	r := b.Events[b.Current].(*rope.Rope).Delete(pos, length)
-	b.Events = b.Events[:b.Current+1]
-	b.Events = append(b.Events, OpDelete{pos, length})
-	b.Events = append(b.Events, r)
-	b.Current += 2
+	r := b.States[b.Current].Rope.Delete(pos, length)
+	b.dropStates()
+	b.States = append(b.States, State{
+		Rope: r,
+		LastOp: Op{
+			Type: Delete,
+			Pos:  pos,
+			Len:  length,
+		},
+	})
+	b.Current += 1
+	// update cursors
+	for _, cursor := range b.Cursors {
+		cursorPos := cursor.Pos[b.Current-1]
+		if cursorPos > pos && cursorPos < pos+length {
+			cursorPos = pos
+		} else if cursorPos >= pos+length {
+			cursorPos -= length
+		}
+		cursor.Pos[b.Current] = cursorPos
+	}
+}
+
+func (b *Buffer) dropStates() {
+	b.States = b.States[:b.Current+1]
+	for _, cursor := range b.Cursors {
+		for i, _ := range cursor.Pos {
+			if i > b.Current {
+				delete(cursor.Pos, i)
+			}
+		}
+	}
 }
