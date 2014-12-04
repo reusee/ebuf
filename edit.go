@@ -2,13 +2,14 @@ package ebuf
 
 // Editing Operations
 const (
-	Insert = iota
-	Delete
+	Insert = true
+	Delete = false
 )
 
 // Op represents editing operation type
 type Op struct {
-	Type, Pos, Len int
+	Type     bool
+	Pos, Len int
 }
 
 // Insert inserts bytes to specified position
