@@ -24,3 +24,7 @@ func New(bs []byte) *Buffer {
 		},
 	}
 }
+
+func (b *Buffer) CurrentBytes() []byte {
+	return b.States[b.Current].Rope.Bytes()
+}

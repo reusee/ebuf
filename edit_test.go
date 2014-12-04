@@ -43,3 +43,27 @@ func TestDelete(t *testing.T) {
 		t.Fatal("string of index 2")
 	}
 }
+
+func TestInsertWithTempCursors(t *testing.T) {
+	b := New([]byte("foobar"))
+	c1 := 0
+	c2 := 3
+	c3 := 6
+	cursors := []*int{&c1, &c2, &c3}
+	b.InsertWithTempCursors(3, []byte("baz"), cursors)
+	if c1 != 0 || c2 != 6 || c3 != 9 {
+		t.Fatal("cursor pos")
+	}
+}
+
+func TestDeleteWithTempCursors(t *testing.T) {
+	b := New([]byte("foobarbaz"))
+	c1 := 0
+	c2 := 3
+	c3 := 6
+	cursors := []*int{&c1, &c2, &c3}
+	b.DeleteWithTempCursors(3, 6, cursors)
+	if c1 != 0 || c2 != 3 || c3 != 3 {
+		t.Fatal("cursor pos")
+	}
+}

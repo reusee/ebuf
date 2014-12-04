@@ -10,6 +10,10 @@ type Op struct {
 }
 
 func (b *Buffer) Insert(pos int, bs []byte) {
+	b.InsertWithTempCursors(pos, bs, nil)
+}
+
+func (b *Buffer) InsertWithTempCursors(pos int, bs []byte, tempCursors []*int) {
 	r := b.States[b.Current].Rope.Insert(pos, bs)
 	b.dropStates()
 	b.States = append(b.States, State{
@@ -28,9 +32,18 @@ func (b *Buffer) Insert(pos int, bs []byte) {
 			*cursor += len(bs)
 		}
 	}
+	for _, cursor := range tempCursors {
+		if *cursor >= pos {
+			*cursor += len(bs)
+		}
+	}
 }
 
 func (b *Buffer) Delete(pos, length int) {
+	b.DeleteWithTempCursors(pos, length, nil)
+}
+
+func (b *Buffer) DeleteWithTempCursors(pos, length int, tempCursors []*int) {
 	r := b.States[b.Current].Rope.Delete(pos, length)
 	b.dropStates()
 	b.States = append(b.States, State{
@@ -45,6 +58,13 @@ func (b *Buffer) Delete(pos, length int) {
 	b.Current += 1
 	// update cursors
 	for _, cursor := range b.Cursors {
+		if *cursor > pos && *cursor < pos+length {
+			*cursor = pos
+		} else if *cursor >= pos+length {
+			*cursor -= length
+		}
+	}
+	for _, cursor := range tempCursors {
 		if *cursor > pos && *cursor < pos+length {
 			*cursor = pos
 		} else if *cursor >= pos+length {
