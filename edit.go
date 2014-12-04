@@ -19,6 +19,7 @@ func (b *Buffer) Insert(pos int, bs []byte) {
 			Pos:  pos,
 			Len:  len(bs),
 		},
+		Skip: b.skipping,
 	})
 	b.Current += 1
 	// update cursors
@@ -39,6 +40,7 @@ func (b *Buffer) Delete(pos, length int) {
 			Pos:  pos,
 			Len:  length,
 		},
+		Skip: b.skipping,
 	})
 	b.Current += 1
 	// update cursors

@@ -4,6 +4,7 @@ func (b *Buffer) Undo() {
 	if b.Current == 0 {
 		return
 	}
+undo:
 	op := b.States[b.Current].LastOp
 	switch op.Type {
 	case Insert:
@@ -22,12 +23,16 @@ func (b *Buffer) Undo() {
 		}
 	}
 	b.Current--
+	if b.States[b.Current].Skip {
+		goto undo
+	}
 }
 
 func (b *Buffer) Redo() {
 	if b.Current+1 == len(b.States) {
 		return
 	}
+redo:
 	b.Current++
 	op := b.States[b.Current].LastOp
 	switch op.Type {
@@ -45,5 +50,8 @@ func (b *Buffer) Redo() {
 				*cursor -= op.Len
 			}
 		}
+	}
+	if b.States[b.Current].Skip {
+		goto redo
 	}
 }
