@@ -1,5 +1,6 @@
 package ebuf
 
+// Undo undos one edit operation
 func (b *Buffer) Undo() {
 	if b.Current == 0 {
 		return
@@ -28,6 +29,7 @@ undo:
 	}
 }
 
+// Redo redos one edit operation
 func (b *Buffer) Redo() {
 	if b.Current+1 == len(b.States) {
 		return

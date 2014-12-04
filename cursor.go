@@ -1,5 +1,6 @@
 package ebuf
 
+// AddCursor adds one cursor to buffer
 func (b *Buffer) AddCursor(pos int) *int {
 	if pos < 0 {
 		pos = 0

@@ -6,11 +6,13 @@ var (
 	pt = fmt.Printf
 )
 
+// Range represent an integer range
 type Range struct {
 	Begin int
 	End   int
 }
 
+// RangesSorter sort Ranges by Begin
 type RangesSorter []Range
 
 func (r RangesSorter) Len() int           { return len(r) }

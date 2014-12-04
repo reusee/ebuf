@@ -1,18 +1,22 @@
 package ebuf
 
+// Editing Operations
 const (
 	Insert = iota
 	Delete
 )
 
+// Op represents editing operation type
 type Op struct {
 	Type, Pos, Len int
 }
 
+// Insert inserts bytes to specified position
 func (b *Buffer) Insert(pos int, bs []byte) {
 	b.InsertWithTempCursors(pos, bs, nil)
 }
 
+// InsertWithTempCursors inserts bytes to specified position, keeping a slice of cursors valid
 func (b *Buffer) InsertWithTempCursors(pos int, bs []byte, tempCursors []*int) {
 	r := b.States[b.Current].Rope.Insert(pos, bs)
 	b.dropStates()
@@ -39,10 +43,12 @@ func (b *Buffer) InsertWithTempCursors(pos int, bs []byte, tempCursors []*int) {
 	}
 }
 
+// Delete deletes specified lengthed bytes from specified position
 func (b *Buffer) Delete(pos, length int) {
 	b.DeleteWithTempCursors(pos, length, nil)
 }
 
+// DeleteWithTempCursors deletes specified lengthed bytes from specified position, keeping a slice of cursors valid
 func (b *Buffer) DeleteWithTempCursors(pos, length int, tempCursors []*int) {
 	r := b.States[b.Current].Rope.Delete(pos, length)
 	b.dropStates()

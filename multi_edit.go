@@ -2,6 +2,7 @@ package ebuf
 
 import "sort"
 
+// InsertAtCursors inserts bytes at all cursors
 func (b *Buffer) InsertAtCursors(bs []byte) {
 	// deduplicate cursors
 	cursors := make(map[int]*int)
@@ -16,6 +17,7 @@ func (b *Buffer) InsertAtCursors(bs []byte) {
 	})
 }
 
+// DeleteAtCursors deletes specified lengthed bytes at all cursors
 func (b *Buffer) DeleteAtCursors(length int) {
 	// calculate ranges
 	var ranges []Range
