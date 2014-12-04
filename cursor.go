@@ -11,3 +11,8 @@ func (b *Buffer) AddCursor(pos int) *int {
 	b.Cursors[&pos] = struct{}{}
 	return &pos
 }
+
+// DelCursor deletes cursor from buffer
+func (b *Buffer) DelCursor(cursor *int) {
+	delete(b.Cursors, cursor)
+}

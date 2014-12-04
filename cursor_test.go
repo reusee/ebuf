@@ -111,3 +111,12 @@ func TestCursorWithUndoRedo(t *testing.T) {
 		t.Fatal("cursor pos")
 	}
 }
+
+func TestDelCursor(t *testing.T) {
+	b := New(nil)
+	cur := b.AddCursor(0)
+	b.DelCursor(cur)
+	if len(b.Cursors) != 0 {
+		t.Fatal("cursor amount")
+	}
+}
