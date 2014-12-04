@@ -25,9 +25,9 @@ func (b *Buffer) InsertWithTempCursors(pos int, bs []byte, tempCursors []*int) {
 		},
 		Skip: b.skipping,
 	})
-	b.Current += 1
+	b.Current++
 	// update cursors
-	for _, cursor := range b.Cursors {
+	for cursor := range b.Cursors {
 		if *cursor >= pos {
 			*cursor += len(bs)
 		}
@@ -55,9 +55,9 @@ func (b *Buffer) DeleteWithTempCursors(pos, length int, tempCursors []*int) {
 		},
 		Skip: b.skipping,
 	})
-	b.Current += 1
+	b.Current++
 	// update cursors
-	for _, cursor := range b.Cursors {
+	for cursor := range b.Cursors {
 		if *cursor > pos && *cursor < pos+length {
 			*cursor = pos
 		} else if *cursor >= pos+length {

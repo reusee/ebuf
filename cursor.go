@@ -7,6 +7,6 @@ func (b *Buffer) AddCursor(pos int) *int {
 	if l := b.States[b.Current].Rope.Len(); pos > l {
 		pos = l
 	}
-	b.Cursors = append(b.Cursors, &pos)
+	b.Cursors[&pos] = struct{}{}
 	return &pos
 }

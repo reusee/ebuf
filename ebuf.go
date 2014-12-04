@@ -6,7 +6,7 @@ type Buffer struct {
 	States   []State
 	skipping bool
 	Current  int
-	Cursors  []*int
+	Cursors  map[*int]struct{}
 }
 
 type State struct {
@@ -22,6 +22,7 @@ func New(bs []byte) *Buffer {
 				Rope: rope.NewFromBytes(bs),
 			},
 		},
+		Cursors: make(map[*int]struct{}),
 	}
 }
 

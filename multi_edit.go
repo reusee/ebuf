@@ -5,7 +5,7 @@ import "sort"
 func (b *Buffer) InsertAtCursors(bs []byte) {
 	// deduplicate cursors
 	cursors := make(map[int]*int)
-	for _, cursor := range b.Cursors {
+	for cursor := range b.Cursors {
 		cursors[*cursor] = cursor
 	}
 	// insert
@@ -19,7 +19,7 @@ func (b *Buffer) InsertAtCursors(bs []byte) {
 func (b *Buffer) DeleteAtCursors(length int) {
 	// calculate ranges
 	var ranges []Range
-	for _, cursor := range b.Cursors {
+	for cursor := range b.Cursors {
 		end := *cursor + length
 		if end > *cursor {
 			ranges = append(ranges, Range{*cursor, end})
