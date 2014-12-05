@@ -10,9 +10,9 @@ func (b *Buffer) InsertWithWatcher(pos int, bs []byte, watcher Watcher) {
 	r := b.Current.Value.(*State).Rope.Insert(pos, bs)
 	b.dropStates()
 	op := Op{
-		Type:  Insert,
-		Pos:   pos,
-		Bytes: bs,
+		Type: Insert,
+		Pos:  pos,
+		Len:  len(bs),
 	}
 	b.Current = b.States.PushBack(&State{
 		Rope:   r,
@@ -40,9 +40,9 @@ func (b *Buffer) DeleteWithWatcher(pos, length int, watcher Watcher) {
 	r := rp.Delete(pos, length)
 	b.dropStates()
 	op := Op{
-		Type:  Delete,
-		Pos:   pos,
-		Bytes: bs,
+		Type: Delete,
+		Pos:  pos,
+		Len:  len(bs),
 	}
 	b.Current = b.States.PushBack(&State{
 		Rope:   r,

@@ -24,9 +24,9 @@ type State struct {
 
 // Op represents editing operation type
 type Op struct {
-	Type  bool
-	Pos   int
-	Bytes []byte
+	Type bool
+	Pos  int
+	Len  int
 }
 
 // Editing Operations
@@ -50,9 +50,9 @@ func New(bs []byte) *Buffer {
 	})
 	for _, watcher := range buf.Watchers {
 		watcher.Operate(Op{
-			Type:  Insert,
-			Pos:   0,
-			Bytes: bs,
+			Type: Insert,
+			Pos:  0,
+			Len:  len(bs),
 		})
 	}
 	return buf
