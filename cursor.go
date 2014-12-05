@@ -27,20 +27,21 @@ func NewCursorSet(cursors ...*int) CursorSet {
 	return set
 }
 
-func (c CursorSet) Insert(op Op) {
-	for cursor := range c {
-		if *cursor >= op.Pos {
-			*cursor += op.Len
+func (c CursorSet) Operate(op Op) {
+	switch op.Type {
+	case Insert:
+		for cursor := range c {
+			if *cursor >= op.Pos {
+				*cursor += op.Len
+			}
 		}
-	}
-}
-
-func (c CursorSet) Delete(op Op) {
-	for cursor := range c {
-		if *cursor > op.Pos && *cursor < op.Pos+op.Len {
-			*cursor = op.Pos
-		} else if *cursor >= op.Pos+op.Len {
-			*cursor -= op.Len
+	case Delete:
+		for cursor := range c {
+			if *cursor > op.Pos && *cursor < op.Pos+op.Len {
+				*cursor = op.Pos
+			} else if *cursor >= op.Pos+op.Len {
+				*cursor -= op.Len
+			}
 		}
 	}
 }

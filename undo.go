@@ -7,17 +7,13 @@ func (b *Buffer) Undo() {
 	}
 undo:
 	op := b.States[b.Current].LastOp
-	switch op.Type {
-	case Insert:
+	if op.Type == Insert {
 		op.Type = Delete
-		for _, watcher := range b.Watchers {
-			watcher.Delete(op)
-		}
-	case Delete:
+	} else {
 		op.Type = Insert
-		for _, watcher := range b.Watchers {
-			watcher.Insert(op)
-		}
+	}
+	for _, watcher := range b.Watchers {
+		watcher.Operate(op)
 	}
 	b.Current--
 	if b.States[b.Current].Skip {
@@ -33,15 +29,8 @@ func (b *Buffer) Redo() {
 redo:
 	b.Current++
 	op := b.States[b.Current].LastOp
-	switch op.Type {
-	case Insert:
-		for _, watcher := range b.Watchers {
-			watcher.Insert(op)
-		}
-	case Delete:
-		for _, watcher := range b.Watchers {
-			watcher.Delete(op)
-		}
+	for _, watcher := range b.Watchers {
+		watcher.Operate(op)
 	}
 	if b.States[b.Current].Skip {
 		goto redo
