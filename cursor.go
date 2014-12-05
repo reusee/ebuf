@@ -16,3 +16,23 @@ func (b *Buffer) AddCursor(pos int) *int {
 func (b *Buffer) DelCursor(cursor *int) {
 	delete(b.Cursors, cursor)
 }
+
+type CursorSet map[*int]struct{}
+
+func (c CursorSet) Insert(op Op) {
+	for cursor := range c {
+		if *cursor >= op.Pos {
+			*cursor += op.Len
+		}
+	}
+}
+
+func (c CursorSet) Delete(op Op) {
+	for cursor := range c {
+		if *cursor > op.Pos && *cursor < op.Pos+op.Len {
+			*cursor = op.Pos
+		} else if *cursor >= op.Pos+op.Len {
+			*cursor -= op.Len
+		}
+	}
+}

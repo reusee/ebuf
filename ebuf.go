@@ -7,7 +7,8 @@ type Buffer struct {
 	States   []State
 	skipping bool
 	Current  int
-	Cursors  map[*int]struct{}
+	Cursors  CursorSet
+	Watchers []Watcher
 }
 
 // State represents a editing state
@@ -19,13 +20,17 @@ type State struct {
 
 // New creates a new buffer with initial bytes
 func New(bs []byte) *Buffer {
+	cursors := CursorSet(make(map[*int]struct{}))
 	return &Buffer{
 		States: []State{
 			State{
 				Rope: rope.NewFromBytes(bs),
 			},
 		},
-		Cursors: make(map[*int]struct{}),
+		Cursors: cursors,
+		Watchers: []Watcher{
+			cursors,
+		},
 	}
 }
 

@@ -21,26 +21,26 @@ func (b *Buffer) Insert(pos int, bs []byte) {
 func (b *Buffer) InsertWithTempCursors(pos int, bs []byte, tempCursors []*int) {
 	r := b.States[b.Current].Rope.Insert(pos, bs)
 	b.dropStates()
+	op := Op{
+		Type: Insert,
+		Pos:  pos,
+		Len:  len(bs),
+	}
 	b.States = append(b.States, State{
-		Rope: r,
-		LastOp: Op{
-			Type: Insert,
-			Pos:  pos,
-			Len:  len(bs),
-		},
-		Skip: b.skipping,
+		Rope:   r,
+		LastOp: op,
+		Skip:   b.skipping,
 	})
 	b.Current++
 	// update cursors
-	for cursor := range b.Cursors {
-		if *cursor >= pos {
-			*cursor += len(bs)
-		}
-	}
 	for _, cursor := range tempCursors {
 		if *cursor >= pos {
 			*cursor += len(bs)
 		}
+	}
+	// watchers
+	for _, watcher := range b.Watchers {
+		watcher.Insert(op)
 	}
 }
 
@@ -53,30 +53,28 @@ func (b *Buffer) Delete(pos, length int) {
 func (b *Buffer) DeleteWithTempCursors(pos, length int, tempCursors []*int) {
 	r := b.States[b.Current].Rope.Delete(pos, length)
 	b.dropStates()
+	op := Op{
+		Type: Delete,
+		Pos:  pos,
+		Len:  length,
+	}
 	b.States = append(b.States, State{
-		Rope: r,
-		LastOp: Op{
-			Type: Delete,
-			Pos:  pos,
-			Len:  length,
-		},
-		Skip: b.skipping,
+		Rope:   r,
+		LastOp: op,
+		Skip:   b.skipping,
 	})
 	b.Current++
 	// update cursors
-	for cursor := range b.Cursors {
-		if *cursor > pos && *cursor < pos+length {
-			*cursor = pos
-		} else if *cursor >= pos+length {
-			*cursor -= length
-		}
-	}
 	for _, cursor := range tempCursors {
 		if *cursor > pos && *cursor < pos+length {
 			*cursor = pos
 		} else if *cursor >= pos+length {
 			*cursor -= length
 		}
+	}
+	// watchers
+	for _, watcher := range b.Watchers {
+		watcher.Delete(op)
 	}
 }
 
