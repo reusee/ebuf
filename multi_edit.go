@@ -57,7 +57,7 @@ func (b *Buffer) DeleteAtCursors(length int) {
 			lengths[&pos] = r.End - pos
 		}
 		for cursor := range cursors {
-			b.DeleteWithTempWatcher(*cursor, lengths[cursor], cursors)
+			b.DeleteWithWatcher(*cursor, lengths[cursor], cursors)
 		}
 	})
 }

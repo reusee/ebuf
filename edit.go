@@ -14,11 +14,11 @@ type Op struct {
 
 // Insert inserts bytes to specified position
 func (b *Buffer) Insert(pos int, bs []byte) {
-	b.InsertWithTempWatcher(pos, bs, nil)
+	b.InsertWithWatcher(pos, bs, nil)
 }
 
-// InsertWithTempWatcher inserts bytes to specified position, keeping a slice of cursors valid
-func (b *Buffer) InsertWithTempWatcher(pos int, bs []byte, watcher Watcher) {
+// InsertWithWatcher inserts bytes to specified position with extra watcher
+func (b *Buffer) InsertWithWatcher(pos int, bs []byte, watcher Watcher) {
 	r := b.States[b.Current].Rope.Insert(pos, bs)
 	b.dropStates()
 	op := Op{
@@ -43,11 +43,11 @@ func (b *Buffer) InsertWithTempWatcher(pos int, bs []byte, watcher Watcher) {
 
 // Delete deletes specified lengthed bytes from specified position
 func (b *Buffer) Delete(pos, length int) {
-	b.DeleteWithTempWatcher(pos, length, nil)
+	b.DeleteWithWatcher(pos, length, nil)
 }
 
-// DeleteWithTempWatcher deletes specified lengthed bytes from specified position, keeping a slice of cursors valid
-func (b *Buffer) DeleteWithTempWatcher(pos, length int, watcher Watcher) {
+// DeleteWithWatcher deletes specified lengthed bytes from specified position with extra watcher
+func (b *Buffer) DeleteWithWatcher(pos, length int, watcher Watcher) {
 	r := b.States[b.Current].Rope.Delete(pos, length)
 	b.dropStates()
 	op := Op{

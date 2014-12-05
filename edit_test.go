@@ -44,25 +44,25 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestInsertWithTempWatcher(t *testing.T) {
+func TestInsertWithWatcher(t *testing.T) {
 	b := New([]byte("foobar"))
 	c1 := 0
 	c2 := 3
 	c3 := 6
 	cursors := NewCursorSet(&c1, &c2, &c3)
-	b.InsertWithTempWatcher(3, []byte("baz"), cursors)
+	b.InsertWithWatcher(3, []byte("baz"), cursors)
 	if c1 != 0 || c2 != 6 || c3 != 9 {
 		t.Fatal("cursor pos")
 	}
 }
 
-func TestDeleteWithTempWatcher(t *testing.T) {
+func TestDeleteWithWatcher(t *testing.T) {
 	b := New([]byte("foobarbaz"))
 	c1 := 0
 	c2 := 3
 	c3 := 6
 	cursors := NewCursorSet(&c1, &c2, &c3)
-	b.DeleteWithTempWatcher(3, 6, cursors)
+	b.DeleteWithWatcher(3, 6, cursors)
 	if c1 != 0 || c2 != 3 || c3 != 3 {
 		t.Fatal("cursor pos")
 	}
