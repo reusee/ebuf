@@ -2,11 +2,11 @@ package ebuf
 
 // Undo undos one edit operation
 func (b *Buffer) Undo() {
-	if b.Current == 0 {
+	if b.Current == b.States.Front() {
 		return
 	}
 undo:
-	op := b.States[b.Current].LastOp
+	op := b.Current.Value.(*State).LastOp
 	if op.Type == Insert {
 		op.Type = Delete
 	} else {
@@ -15,24 +15,24 @@ undo:
 	for _, watcher := range b.Watchers {
 		watcher.Operate(op)
 	}
-	b.Current--
-	if b.States[b.Current].Skip {
+	b.Current = b.Current.Prev()
+	if b.Current.Value.(*State).Skip {
 		goto undo
 	}
 }
 
 // Redo redos one edit operation
 func (b *Buffer) Redo() {
-	if b.Current+1 == len(b.States) {
+	if b.Current == b.States.Back() {
 		return
 	}
 redo:
-	b.Current++
-	op := b.States[b.Current].LastOp
+	b.Current = b.Current.Next()
+	op := b.Current.Value.(*State).LastOp
 	for _, watcher := range b.Watchers {
 		watcher.Operate(op)
 	}
-	if b.States[b.Current].Skip {
+	if b.Current.Value.(*State).Skip {
 		goto redo
 	}
 }

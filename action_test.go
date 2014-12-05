@@ -10,7 +10,7 @@ func TestAction(t *testing.T) {
 		b.Insert(3, []byte("bar"))
 		b.Insert(6, []byte("baz"))
 	})
-	if b.Current != 3 {
+	if b.currentIndex() != 3 {
 		t.Fatal("current")
 	}
 	if *cursor != 9 {
@@ -18,7 +18,7 @@ func TestAction(t *testing.T) {
 	}
 
 	b.Undo()
-	if b.Current != 0 {
+	if b.currentIndex() != 0 {
 		t.Fatal("current")
 	}
 	if *cursor != 0 {
@@ -26,7 +26,7 @@ func TestAction(t *testing.T) {
 	}
 
 	b.Redo()
-	if b.Current != 3 {
+	if b.currentIndex() != 3 {
 		t.Fatal("current")
 	}
 	if *cursor != 9 {
@@ -37,7 +37,7 @@ func TestAction(t *testing.T) {
 		b.Delete(0, 3)
 		b.Delete(0, 3)
 	})
-	if b.Current != 5 {
+	if b.currentIndex() != 5 {
 		t.Fatal("current")
 	}
 	if *cursor != 3 {
@@ -45,7 +45,7 @@ func TestAction(t *testing.T) {
 	}
 
 	b.Undo()
-	if b.Current != 3 {
+	if b.currentIndex() != 3 {
 		t.Fatal("current")
 	}
 	if *cursor != 9 {

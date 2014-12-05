@@ -1,12 +1,16 @@
 package ebuf
 
-import "github.com/reusee/rope"
+import (
+	"container/list"
+
+	"github.com/reusee/rope"
+)
 
 // Buffer represents a editing buffer
 type Buffer struct {
-	States   []State
+	States   *list.List
 	skipping bool
-	Current  int
+	Current  *list.Element
 	Cursors  CursorSet
 	Watchers []Watcher
 }
@@ -35,16 +39,15 @@ const (
 func New(bs []byte) *Buffer {
 	cursors := CursorSet(make(map[*int]struct{}))
 	buf := &Buffer{
-		States: []State{
-			State{
-				Rope: rope.NewFromBytes(bs),
-			},
-		},
+		States:  list.New(),
 		Cursors: cursors,
 		Watchers: []Watcher{
 			cursors,
 		},
 	}
+	buf.Current = buf.States.PushBack(&State{
+		Rope: rope.NewFromBytes(bs),
+	})
 	for _, watcher := range buf.Watchers {
 		watcher.Operate(Op{
 			Type:  Insert,
@@ -57,5 +60,15 @@ func New(bs []byte) *Buffer {
 
 // CurrentBytes get current bytes of buffer
 func (b *Buffer) CurrentBytes() []byte {
-	return b.States[b.Current].Rope.Bytes()
+	return b.Current.Value.(*State).Rope.Bytes()
+}
+
+func (b *Buffer) currentIndex() int {
+	ret := 0
+	cur := b.States.Front()
+	for cur != b.Current {
+		ret++
+		cur = cur.Next()
+	}
+	return ret
 }

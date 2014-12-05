@@ -7,19 +7,18 @@ func (b *Buffer) Insert(pos int, bs []byte) {
 
 // InsertWithWatcher inserts bytes to specified position with extra watcher
 func (b *Buffer) InsertWithWatcher(pos int, bs []byte, watcher Watcher) {
-	r := b.States[b.Current].Rope.Insert(pos, bs)
+	r := b.Current.Value.(*State).Rope.Insert(pos, bs)
 	b.dropStates()
 	op := Op{
 		Type:  Insert,
 		Pos:   pos,
 		Bytes: bs,
 	}
-	b.States = append(b.States, State{
+	b.Current = b.States.PushBack(&State{
 		Rope:   r,
 		LastOp: op,
 		Skip:   b.skipping,
 	})
-	b.Current++
 	// watchers
 	for _, watcher := range b.Watchers {
 		watcher.Operate(op)
@@ -36,20 +35,20 @@ func (b *Buffer) Delete(pos, length int) {
 
 // DeleteWithWatcher deletes specified lengthed bytes from specified position with extra watcher
 func (b *Buffer) DeleteWithWatcher(pos, length int, watcher Watcher) {
-	bs := b.States[b.Current].Rope.Sub(pos, length)
-	r := b.States[b.Current].Rope.Delete(pos, length)
+	rp := b.Current.Value.(*State).Rope
+	bs := rp.Sub(pos, length)
+	r := rp.Delete(pos, length)
 	b.dropStates()
 	op := Op{
 		Type:  Delete,
 		Pos:   pos,
 		Bytes: bs,
 	}
-	b.States = append(b.States, State{
+	b.Current = b.States.PushBack(&State{
 		Rope:   r,
 		LastOp: op,
 		Skip:   b.skipping,
 	})
-	b.Current++
 	// watchers
 	for _, watcher := range b.Watchers {
 		watcher.Operate(op)
@@ -60,5 +59,7 @@ func (b *Buffer) DeleteWithWatcher(pos, length int, watcher Watcher) {
 }
 
 func (b *Buffer) dropStates() {
-	b.States = b.States[:b.Current+1]
+	for b.States.Back() != b.Current {
+		b.States.Remove(b.States.Back())
+	}
 }

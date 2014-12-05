@@ -39,7 +39,7 @@ func TestCursorWithDelete(t *testing.T) {
 		t.Fatal("cursor pos")
 	}
 
-	cursor = b.AddCursor(b.States[b.Current].Rope.Len() + 42) // for coverage
+	cursor = b.AddCursor(b.Current.Value.(*State).Rope.Len() + 42) // for coverage
 	if *cursor != 6 {
 		t.Fatal("cursor pos")
 	}

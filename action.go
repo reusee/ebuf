@@ -5,5 +5,5 @@ func (b *Buffer) Action(fn func()) {
 	b.skipping = true
 	fn()
 	b.skipping = false
-	b.States[b.Current].Skip = false
+	b.Current.Value.(*State).Skip = false
 }
