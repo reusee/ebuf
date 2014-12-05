@@ -17,8 +17,10 @@ func (b *Buffer) DelCursor(cursor *int) {
 	delete(b.Cursors, cursor)
 }
 
+// CursorSet represents buffer cursors
 type CursorSet map[*int]struct{}
 
+// NewCursorSet create a CursorSet with cursor arguments
 func NewCursorSet(cursors ...*int) CursorSet {
 	set := CursorSet(make(map[*int]struct{}))
 	for _, cursor := range cursors {
@@ -27,6 +29,7 @@ func NewCursorSet(cursors ...*int) CursorSet {
 	return set
 }
 
+// Operate deals with an buffer operation
 func (c CursorSet) Operate(op Op) {
 	opLen := len(op.Bytes)
 	switch op.Type {

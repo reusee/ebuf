@@ -1,18 +1,5 @@
 package ebuf
 
-// Editing Operations
-const (
-	Insert = true
-	Delete = false
-)
-
-// Op represents editing operation type
-type Op struct {
-	Type  bool
-	Pos   int
-	Bytes []byte
-}
-
 // Insert inserts bytes to specified position
 func (b *Buffer) Insert(pos int, bs []byte) {
 	b.InsertWithWatcher(pos, bs, nil)

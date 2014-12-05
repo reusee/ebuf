@@ -18,10 +18,23 @@ type State struct {
 	Skip   bool
 }
 
+// Op represents editing operation type
+type Op struct {
+	Type  bool
+	Pos   int
+	Bytes []byte
+}
+
+// Editing Operations
+const (
+	Insert = true
+	Delete = false
+)
+
 // New creates a new buffer with initial bytes
 func New(bs []byte) *Buffer {
 	cursors := CursorSet(make(map[*int]struct{}))
-	return &Buffer{
+	buf := &Buffer{
 		States: []State{
 			State{
 				Rope: rope.NewFromBytes(bs),
@@ -32,6 +45,14 @@ func New(bs []byte) *Buffer {
 			cursors,
 		},
 	}
+	for _, watcher := range buf.Watchers {
+		watcher.Operate(Op{
+			Type:  Insert,
+			Pos:   0,
+			Bytes: bs,
+		})
+	}
+	return buf
 }
 
 // CurrentBytes get current bytes of buffer
