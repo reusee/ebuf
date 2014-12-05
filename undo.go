@@ -9,18 +9,14 @@ undo:
 	op := b.States[b.Current].LastOp
 	switch op.Type {
 	case Insert:
-		for cursor := range b.Cursors {
-			if *cursor > op.Pos && *cursor < op.Pos+op.Len {
-				*cursor = op.Pos
-			} else if *cursor >= op.Pos+op.Len {
-				*cursor -= op.Len
-			}
+		op.Type = Delete
+		for _, watcher := range b.Watchers {
+			watcher.Delete(op)
 		}
 	case Delete:
-		for cursor := range b.Cursors {
-			if *cursor >= op.Pos {
-				*cursor += op.Len
-			}
+		op.Type = Insert
+		for _, watcher := range b.Watchers {
+			watcher.Insert(op)
 		}
 	}
 	b.Current--
@@ -39,18 +35,12 @@ redo:
 	op := b.States[b.Current].LastOp
 	switch op.Type {
 	case Insert:
-		for cursor := range b.Cursors {
-			if *cursor >= op.Pos {
-				*cursor += op.Len
-			}
+		for _, watcher := range b.Watchers {
+			watcher.Insert(op)
 		}
 	case Delete:
-		for cursor := range b.Cursors {
-			if *cursor > op.Pos && *cursor < op.Pos+op.Len {
-				*cursor = op.Pos
-			} else if *cursor >= op.Pos+op.Len {
-				*cursor -= op.Len
-			}
+		for _, watcher := range b.Watchers {
+			watcher.Delete(op)
 		}
 	}
 	if b.States[b.Current].Skip {
