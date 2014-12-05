@@ -14,11 +14,11 @@ type Op struct {
 
 // Insert inserts bytes to specified position
 func (b *Buffer) Insert(pos int, bs []byte) {
-	b.InsertWithTempCursors(pos, bs, nil)
+	b.InsertWithTempWatcher(pos, bs, nil)
 }
 
-// InsertWithTempCursors inserts bytes to specified position, keeping a slice of cursors valid
-func (b *Buffer) InsertWithTempCursors(pos int, bs []byte, tempCursors []*int) {
+// InsertWithTempWatcher inserts bytes to specified position, keeping a slice of cursors valid
+func (b *Buffer) InsertWithTempWatcher(pos int, bs []byte, watcher Watcher) {
 	r := b.States[b.Current].Rope.Insert(pos, bs)
 	b.dropStates()
 	op := Op{
@@ -32,25 +32,22 @@ func (b *Buffer) InsertWithTempCursors(pos int, bs []byte, tempCursors []*int) {
 		Skip:   b.skipping,
 	})
 	b.Current++
-	// update cursors
-	for _, cursor := range tempCursors {
-		if *cursor >= pos {
-			*cursor += len(bs)
-		}
-	}
 	// watchers
 	for _, watcher := range b.Watchers {
+		watcher.Insert(op)
+	}
+	if watcher != nil {
 		watcher.Insert(op)
 	}
 }
 
 // Delete deletes specified lengthed bytes from specified position
 func (b *Buffer) Delete(pos, length int) {
-	b.DeleteWithTempCursors(pos, length, nil)
+	b.DeleteWithTempWatcher(pos, length, nil)
 }
 
-// DeleteWithTempCursors deletes specified lengthed bytes from specified position, keeping a slice of cursors valid
-func (b *Buffer) DeleteWithTempCursors(pos, length int, tempCursors []*int) {
+// DeleteWithTempWatcher deletes specified lengthed bytes from specified position, keeping a slice of cursors valid
+func (b *Buffer) DeleteWithTempWatcher(pos, length int, watcher Watcher) {
 	r := b.States[b.Current].Rope.Delete(pos, length)
 	b.dropStates()
 	op := Op{
@@ -64,16 +61,11 @@ func (b *Buffer) DeleteWithTempCursors(pos, length int, tempCursors []*int) {
 		Skip:   b.skipping,
 	})
 	b.Current++
-	// update cursors
-	for _, cursor := range tempCursors {
-		if *cursor > pos && *cursor < pos+length {
-			*cursor = pos
-		} else if *cursor >= pos+length {
-			*cursor -= length
-		}
-	}
 	// watchers
 	for _, watcher := range b.Watchers {
+		watcher.Delete(op)
+	}
+	if watcher != nil {
 		watcher.Delete(op)
 	}
 }

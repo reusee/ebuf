@@ -19,6 +19,14 @@ func (b *Buffer) DelCursor(cursor *int) {
 
 type CursorSet map[*int]struct{}
 
+func NewCursorSet(cursors ...*int) CursorSet {
+	set := CursorSet(make(map[*int]struct{}))
+	for _, cursor := range cursors {
+		set[cursor] = struct{}{}
+	}
+	return set
+}
+
 func (c CursorSet) Insert(op Op) {
 	for cursor := range c {
 		if *cursor >= op.Pos {

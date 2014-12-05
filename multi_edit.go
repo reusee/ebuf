@@ -49,15 +49,15 @@ func (b *Buffer) DeleteAtCursors(length int) {
 	}
 	// delete
 	b.Action(func() {
-		var cursors []*int
+		cursors := NewCursorSet()
 		lengths := make(map[*int]int)
 		for _, r := range delRanges {
 			pos := r.Begin
-			cursors = append(cursors, &pos)
+			cursors[&pos] = struct{}{}
 			lengths[&pos] = r.End - pos
 		}
-		for _, cursor := range cursors {
-			b.DeleteWithTempCursors(*cursor, lengths[cursor], cursors)
+		for cursor := range cursors {
+			b.DeleteWithTempWatcher(*cursor, lengths[cursor], cursors)
 		}
 	})
 }
