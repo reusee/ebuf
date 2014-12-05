@@ -8,8 +8,9 @@ const (
 
 // Op represents editing operation type
 type Op struct {
-	Type     bool
-	Pos, Len int
+	Type  bool
+	Pos   int
+	Bytes []byte
 }
 
 // Insert inserts bytes to specified position
@@ -22,9 +23,9 @@ func (b *Buffer) InsertWithWatcher(pos int, bs []byte, watcher Watcher) {
 	r := b.States[b.Current].Rope.Insert(pos, bs)
 	b.dropStates()
 	op := Op{
-		Type: Insert,
-		Pos:  pos,
-		Len:  len(bs),
+		Type:  Insert,
+		Pos:   pos,
+		Bytes: bs,
 	}
 	b.States = append(b.States, State{
 		Rope:   r,
@@ -48,12 +49,13 @@ func (b *Buffer) Delete(pos, length int) {
 
 // DeleteWithWatcher deletes specified lengthed bytes from specified position with extra watcher
 func (b *Buffer) DeleteWithWatcher(pos, length int, watcher Watcher) {
+	bs := b.States[b.Current].Rope.Sub(pos, length)
 	r := b.States[b.Current].Rope.Delete(pos, length)
 	b.dropStates()
 	op := Op{
-		Type: Delete,
-		Pos:  pos,
-		Len:  length,
+		Type:  Delete,
+		Pos:   pos,
+		Bytes: bs,
 	}
 	b.States = append(b.States, State{
 		Rope:   r,

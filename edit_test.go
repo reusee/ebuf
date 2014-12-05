@@ -15,7 +15,7 @@ func TestInsert(t *testing.T) {
 		t.Fatal("string of index 0")
 	}
 	op := b.States[1].LastOp
-	if op.Type != Insert || op.Pos != 0 || op.Len != 9 {
+	if op.Type != Insert || op.Pos != 0 || string(op.Bytes) != "foobarbaz" {
 		t.Fatal("insert operation")
 	}
 	if string(b.States[1].Rope.Bytes()) != "foobarbaz" {
@@ -36,7 +36,7 @@ func TestDelete(t *testing.T) {
 		t.Fatal("string of index 0")
 	}
 	op := b.States[1].LastOp
-	if op.Type != Delete || op.Pos != 3 || op.Len != 3 {
+	if op.Type != Delete || op.Pos != 3 || string(op.Bytes) != "bar" {
 		t.Fatal("delete operation")
 	}
 	if string(b.States[1].Rope.Bytes()) != "foobaz" {

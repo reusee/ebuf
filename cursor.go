@@ -28,19 +28,20 @@ func NewCursorSet(cursors ...*int) CursorSet {
 }
 
 func (c CursorSet) Operate(op Op) {
+	opLen := len(op.Bytes)
 	switch op.Type {
 	case Insert:
 		for cursor := range c {
 			if *cursor >= op.Pos {
-				*cursor += op.Len
+				*cursor += opLen
 			}
 		}
 	case Delete:
 		for cursor := range c {
-			if *cursor > op.Pos && *cursor < op.Pos+op.Len {
+			if *cursor > op.Pos && *cursor < op.Pos+opLen {
 				*cursor = op.Pos
-			} else if *cursor >= op.Pos+op.Len {
-				*cursor -= op.Len
+			} else if *cursor >= op.Pos+opLen {
+				*cursor -= opLen
 			}
 		}
 	}
