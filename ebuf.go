@@ -54,7 +54,7 @@ func New(bs []byte) *Buffer {
 			Type: Insert,
 			Pos:  0,
 			Len:  len(bs),
-		}, buf.Current.Value.(*State).Rope)
+		}, buf.Current)
 	}
 	return buf
 }

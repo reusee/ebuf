@@ -1,6 +1,6 @@
 package ebuf
 
-import "github.com/reusee/rope"
+import "container/list"
 
 // AddCursor adds one cursor to buffer
 func (b *Buffer) AddCursor(pos int) *int {
@@ -32,7 +32,7 @@ func NewCursorSet(cursors ...*int) CursorSet {
 }
 
 // Operate deals with an buffer operation
-func (c CursorSet) Operate(op Op, _ *rope.Rope) {
+func (c CursorSet) Operate(op Op, _ *list.Element) {
 	switch op.Type {
 	case Insert:
 		for cursor := range c {
