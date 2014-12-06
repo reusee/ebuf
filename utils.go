@@ -1,10 +1,18 @@
 package ebuf
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 var (
 	pt = fmt.Printf
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 // Range represent an integer range
 type Range struct {
