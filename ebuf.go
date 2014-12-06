@@ -42,7 +42,8 @@ func New(bs []byte) *Buffer {
 		States:  list.New(),
 		Cursors: cursors,
 		Watchers: map[string]Watcher{
-			"cursors": cursors,
+			"cursors":     cursors,
+			"line-breaks": NewLineBreaks(),
 		},
 	}
 	buf.Current = buf.States.PushBack(&State{
@@ -53,7 +54,7 @@ func New(bs []byte) *Buffer {
 			Type: Insert,
 			Pos:  0,
 			Len:  len(bs),
-		})
+		}, buf.Current.Value.(*State).Rope)
 	}
 	return buf
 }

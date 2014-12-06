@@ -12,10 +12,10 @@ undo:
 	} else {
 		op.Type = Insert
 	}
-	for _, watcher := range b.Watchers {
-		watcher.Operate(op)
-	}
 	b.Current = b.Current.Prev()
+	for _, watcher := range b.Watchers {
+		watcher.Operate(op, b.Current.Value.(*State).Rope)
+	}
 	if b.Current.Value.(*State).Skip {
 		goto undo
 	}
@@ -30,7 +30,7 @@ redo:
 	b.Current = b.Current.Next()
 	op := b.Current.Value.(*State).LastOp
 	for _, watcher := range b.Watchers {
-		watcher.Operate(op)
+		watcher.Operate(op, b.Current.Value.(*State).Rope)
 	}
 	if b.Current.Value.(*State).Skip {
 		goto redo

@@ -21,10 +21,10 @@ func (b *Buffer) InsertWithWatcher(pos int, bs []byte, watcher Watcher) {
 	})
 	// watchers
 	for _, watcher := range b.Watchers {
-		watcher.Operate(op)
+		watcher.Operate(op, r)
 	}
 	if watcher != nil {
-		watcher.Operate(op)
+		watcher.Operate(op, r)
 	}
 }
 
@@ -51,10 +51,10 @@ func (b *Buffer) DeleteWithWatcher(pos, length int, watcher Watcher) {
 	})
 	// watchers
 	for _, watcher := range b.Watchers {
-		watcher.Operate(op)
+		watcher.Operate(op, r)
 	}
 	if watcher != nil {
-		watcher.Operate(op)
+		watcher.Operate(op, r)
 	}
 }
 

@@ -1,5 +1,7 @@
 package ebuf
 
+import "github.com/reusee/rope"
+
 // AddCursor adds one cursor to buffer
 func (b *Buffer) AddCursor(pos int) *int {
 	if pos < 0 {
@@ -30,7 +32,7 @@ func NewCursorSet(cursors ...*int) CursorSet {
 }
 
 // Operate deals with an buffer operation
-func (c CursorSet) Operate(op Op) {
+func (c CursorSet) Operate(op Op, _ *rope.Rope) {
 	switch op.Type {
 	case Insert:
 		for cursor := range c {
