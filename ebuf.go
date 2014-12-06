@@ -12,7 +12,7 @@ type Buffer struct {
 	skipping bool
 	Current  *list.Element
 	Cursors  CursorSet
-	Watchers []Watcher
+	Watchers map[string]Watcher
 }
 
 // State represents a editing state
@@ -41,8 +41,8 @@ func New(bs []byte) *Buffer {
 	buf := &Buffer{
 		States:  list.New(),
 		Cursors: cursors,
-		Watchers: []Watcher{
-			cursors,
+		Watchers: map[string]Watcher{
+			"cursors": cursors,
 		},
 	}
 	buf.Current = buf.States.PushBack(&State{
