@@ -24,22 +24,26 @@ func (b *Buffer) DelCursor(cursor *int) {
 	b.Cursors.DelCursor(cursor)
 }
 
+// Cursors represents a set of Cursor
 type Cursors struct {
 	Head   *Cursor
 	length int
 }
 
+// Cursor represents a cursor in buffer
 type Cursor struct {
 	Value *int
 	Next  []*Cursor
 }
 
+// Pos returns cursor's byte position
 func (c *Cursor) Pos() int {
 	return *c.Value
 }
 
 const maxLevel = 22
 
+// NewCursors creates a new Cursors
 func NewCursors() *Cursors {
 	return &Cursors{
 		Head: &Cursor{
@@ -60,6 +64,7 @@ func (l *Cursors) getPrevs(n int) []**Cursor {
 	return prevs
 }
 
+// Add adds a pointer to position to cursors
 func (l *Cursors) Add(c *int) {
 	// get prevs
 	prevs := l.getPrevs(*c)
@@ -89,6 +94,7 @@ func (l *Cursors) Add(c *int) {
 	l.length++
 }
 
+// DelCursor deletes a cursor from cursors by integer pointer
 func (l *Cursors) DelCursor(c *int) {
 	// get prevs
 	prevs := l.getPrevs(*c)
@@ -109,6 +115,7 @@ func (l *Cursors) DelCursor(c *int) {
 	}
 }
 
+// DelPos deletes a cursor from cursors by integer position
 func (l *Cursors) DelPos(pos int) {
 	// get prevs
 	prevs := l.getPrevs(pos)
@@ -129,6 +136,7 @@ func (l *Cursors) DelPos(pos int) {
 	}
 }
 
+// Iterate calls a callback on all cursors
 func (l *Cursors) Iterate(fn func(*Cursor) bool) {
 	cur := l.Head.Next[0]
 	for cur != nil {
@@ -139,6 +147,7 @@ func (l *Cursors) Iterate(fn func(*Cursor) bool) {
 	}
 }
 
+// Len returns cursors length
 func (l *Cursors) Len() int {
 	return l.length
 }

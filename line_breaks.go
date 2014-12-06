@@ -2,16 +2,19 @@ package ebuf
 
 import "container/list"
 
+// LineBreaks maintains all line-break positions
 type LineBreaks struct {
 	*Cursors
 }
 
+// NewLineBreaks creates a new LineBreaks
 func NewLineBreaks() *LineBreaks {
 	return &LineBreaks{
 		Cursors: NewCursors(),
 	}
 }
 
+// Operate deals with buffer modifications
 func (l *LineBreaks) Operate(op Op, cur *list.Element) {
 	bs := cur.Value.(*State).Rope.Sub(op.Pos, op.Len)
 	switch op.Type {
