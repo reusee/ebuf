@@ -8,11 +8,12 @@ import (
 
 // Buffer represents a editing buffer
 type Buffer struct {
-	States   *list.List
-	skipping bool
-	Current  *list.Element
-	Cursors  CursorSet
-	Watchers map[string]Watcher
+	States     *list.List
+	skipping   bool
+	Current    *list.Element
+	Cursors    CursorSet
+	LineBreaks *LineBreaks
+	Watchers   map[string]Watcher
 }
 
 // State represents a editing state
@@ -38,12 +39,14 @@ const (
 // New creates a new buffer with initial bytes
 func New(bs []byte) *Buffer {
 	cursors := CursorSet(make(map[*int]struct{}))
+	lineBreaks := NewLineBreaks()
 	buf := &Buffer{
-		States:  list.New(),
-		Cursors: cursors,
+		States:     list.New(),
+		Cursors:    cursors,
+		LineBreaks: lineBreaks,
 		Watchers: map[string]Watcher{
 			"cursors":     cursors,
-			"line-breaks": NewLineBreaks(),
+			"line-breaks": lineBreaks,
 		},
 	}
 	buf.Current = buf.States.PushBack(&State{

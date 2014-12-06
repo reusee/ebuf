@@ -1,6 +1,10 @@
 package ebuf
 
-import "container/list"
+import (
+	"container/list"
+	"fmt"
+	"sort"
+)
 
 // AddCursor adds one cursor to buffer
 func (b *Buffer) AddCursor(pos int) *int {
@@ -49,4 +53,13 @@ func (c CursorSet) Operate(op Op, _ *list.Element) {
 			}
 		}
 	}
+}
+
+func (c CursorSet) String() string {
+	var poses []int
+	for cursor := range c {
+		poses = append(poses, *cursor)
+	}
+	sort.Ints(poses)
+	return fmt.Sprintf("%v", poses)
 }
