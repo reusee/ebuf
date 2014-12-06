@@ -6,9 +6,10 @@ import "sort"
 func (b *Buffer) InsertAtCursors(bs []byte) {
 	// deduplicate cursors
 	cursors := make(map[int]*int)
-	for cursor := range b.Cursors {
-		cursors[*cursor] = cursor
-	}
+	b.Cursors.Iterate(func(cursor *Cursor) bool {
+		cursors[cursor.Pos()] = cursor.Value
+		return true
+	})
 	// insert
 	b.Action(func() {
 		for _, cursor := range cursors {
@@ -21,14 +22,15 @@ func (b *Buffer) InsertAtCursors(bs []byte) {
 func (b *Buffer) DeleteAtCursors(length int) {
 	// calculate ranges
 	var ranges []Range
-	for cursor := range b.Cursors {
-		end := *cursor + length
-		if end > *cursor {
-			ranges = append(ranges, Range{*cursor, end})
+	b.Cursors.Iterate(func(cursor *Cursor) bool {
+		end := cursor.Pos() + length
+		if end > cursor.Pos() {
+			ranges = append(ranges, Range{cursor.Pos(), end})
 		} else {
-			ranges = append(ranges, Range{end, *cursor})
+			ranges = append(ranges, Range{end, cursor.Pos()})
 		}
-	}
+		return true
+	})
 	// merge overlapped ranges
 	sort.Sort(RangesSorter(ranges))
 	delRanges := []Range{}
@@ -49,15 +51,16 @@ func (b *Buffer) DeleteAtCursors(length int) {
 	}
 	// delete
 	b.Action(func() {
-		cursors := NewCursorSet()
+		cursors := NewCursors()
 		lengths := make(map[*int]int)
 		for _, r := range delRanges {
 			pos := r.Begin
-			cursors[&pos] = struct{}{}
+			cursors.Add(&pos)
 			lengths[&pos] = r.End - pos
 		}
-		for cursor := range cursors {
-			b.DeleteWithWatcher(*cursor, lengths[cursor], cursors)
-		}
+		cursors.Iterate(func(cursor *Cursor) bool {
+			b.DeleteWithWatcher(cursor.Pos(), lengths[cursor.Value], cursors)
+			return true
+		})
 	})
 }

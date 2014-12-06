@@ -11,7 +11,7 @@ type Buffer struct {
 	States     *list.List
 	skipping   bool
 	Current    *list.Element
-	Cursors    CursorSet
+	Cursors    *Cursors
 	LineBreaks *LineBreaks
 	Watchers   map[string]Watcher
 }
@@ -38,7 +38,7 @@ const (
 
 // New creates a new buffer with initial bytes
 func New(bs []byte) *Buffer {
-	cursors := CursorSet(make(map[*int]struct{}))
+	cursors := NewCursors()
 	lineBreaks := NewLineBreaks()
 	buf := &Buffer{
 		States:     list.New(),

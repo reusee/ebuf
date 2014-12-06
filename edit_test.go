@@ -49,7 +49,10 @@ func TestInsertWithWatcher(t *testing.T) {
 	c1 := 0
 	c2 := 3
 	c3 := 6
-	cursors := NewCursorSet(&c1, &c2, &c3)
+	cursors := NewCursors()
+	cursors.Add(&c1)
+	cursors.Add(&c2)
+	cursors.Add(&c3)
 	b.InsertWithWatcher(3, []byte("baz"), cursors)
 	if c1 != 0 || c2 != 6 || c3 != 9 {
 		t.Fatal("cursor pos")
@@ -61,7 +64,10 @@ func TestDeleteWithWatcher(t *testing.T) {
 	c1 := 0
 	c2 := 3
 	c3 := 6
-	cursors := NewCursorSet(&c1, &c2, &c3)
+	cursors := NewCursors()
+	cursors.Add(&c1)
+	cursors.Add(&c2)
+	cursors.Add(&c3)
 	b.DeleteWithWatcher(3, 6, cursors)
 	if c1 != 0 || c2 != 3 || c3 != 3 {
 		t.Fatal("cursor pos")
