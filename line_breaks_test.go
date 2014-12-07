@@ -8,17 +8,17 @@ func TestLineBreaks(t *testing.T) {
 	if b.LineBreaks.Cursors.String() != "0" {
 		t.Fatal("line breaks")
 	}
-	b.Insert(0, []byte{'\n'})
-	if b.LineBreaks.Cursors.String() != "0 1" {
+	b.Insert(1, []byte("foo\n"))
+	if b.LineBreaks.Cursors.String() != "0 4" {
 		t.Fatal("line breaks")
 	}
-	b.Insert(0, []byte{'\n'})
-	if b.LineBreaks.Cursors.String() != "0 1 2" {
+	b.Insert(5, []byte("bar\n"))
+	if b.LineBreaks.Cursors.String() != "0 4 8" {
 		t.Fatal("line breaks")
 	}
 
 	b.Undo()
-	if b.LineBreaks.Cursors.String() != "0 1" {
+	if b.LineBreaks.Cursors.String() != "0 4" {
 		t.Fatal("line breaks")
 	}
 	b.Undo()
