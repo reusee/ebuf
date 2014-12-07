@@ -41,6 +41,16 @@ func (c *Cursor) Pos() int {
 	return *c.Value
 }
 
+// Set sets cursor's byte position
+func (c *Cursor) Set(n int) {
+	*c.Value = n
+}
+
+// Move moves cursor's byte position
+func (c *Cursor) Move(n int) {
+	*c.Value += n
+}
+
 const maxLevel = 22
 
 // NewCursors creates a new Cursors
@@ -167,16 +177,16 @@ func (l *Cursors) Operate(op Op, _ *list.Element) {
 	case Insert:
 		l.Iterate(func(cursor *Cursor) bool {
 			if cursor.Pos() >= op.Pos {
-				*cursor.Value += op.Len
+				cursor.Move(op.Len)
 			}
 			return true
 		})
 	case Delete:
 		l.Iterate(func(cursor *Cursor) bool {
 			if cursor.Pos() > op.Pos && cursor.Pos() < op.Pos+op.Len {
-				*cursor.Value = op.Pos
+				cursor.Set(op.Pos)
 			} else if cursor.Pos() >= op.Pos+op.Len {
-				*cursor.Value -= op.Len
+				cursor.Move(-op.Len)
 			}
 			return true
 		})
