@@ -205,29 +205,47 @@ func TestCursorWithUndoRedo(t *testing.T) {
 }
 
 func TestDelCursor(t *testing.T) {
-	b := New(nil)
-	cur := b.AddCursor(0)
-	b.DelCursor(cur)
-	if b.Cursors.Len() != 0 {
-		t.Fatal("cursor amount")
+	for i := 0; i < 1024; i++ {
+		b := New(nil)
+		cur := b.AddCursor(0)
+		b.DelCursor(cur)
+		if b.Cursors.Len() != 0 {
+			t.Fatal("cursor amount")
+		}
 	}
 }
 
 func TestCursorsIterate(t *testing.T) {
-	cursors := NewCursors()
-	for i := 0; i < 16; i++ {
-		i := i
-		cursors.Add(&i)
-	}
-	n := 0
-	cursors.Iterate(func(cursor *Cursor) bool {
-		if cursor.Pos() > 10 {
-			return false
+	for count := 0; count < 1024; count++ {
+		cursors := NewCursors()
+		for i := 0; i < 16; i++ {
+			i := i
+			cursors.Add(&i)
 		}
-		n++
-		return true
-	})
-	if n != 11 {
-		t.Fatal("n")
+		n := 0
+		cursors.Iterate(func(cursor *Cursor) bool {
+			if cursor.Pos() > 10 {
+				return false
+			}
+			n++
+			return true
+		})
+		if n != 11 {
+			t.Fatal("n")
+		}
+	}
+}
+
+func TestDeleteCursorAtSamePos(t *testing.T) {
+	for i := 0; i < 1024; i++ {
+		cursors := NewCursors()
+		c1 := 0
+		c2 := 0
+		cursors.Add(&c1)
+		cursors.Add(&c2)
+		cursors.DelCursor(&c1)
+		if cursors.Len() != 1 {
+			t.Fatal("cursors len")
+		}
 	}
 }

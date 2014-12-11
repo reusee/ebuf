@@ -111,10 +111,15 @@ func (l *Cursors) DelCursor(c *int) {
 	// update pointers
 	deleted := false
 	for level := 0; level < maxLevel; level++ {
+	samePos:
 		if *prevs[level] == nil {
 			continue
 		}
 		if (*prevs[level]).Value != c {
+			if *((*prevs[level]).Value) == *c {
+				prevs[level] = &((*prevs[level]).Next[level])
+				goto samePos
+			}
 			continue
 		}
 		*prevs[level] = (*prevs[level]).Next[level]
