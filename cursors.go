@@ -135,7 +135,7 @@ func (l *Cursors) DelPos(pos int) {
 	// get prevs
 	prevs := l.getPrevs(pos)
 	// update pointers
-	deleted := false
+	delLen := 0
 	for level := 0; level < maxLevel; level++ {
 		if *prevs[level] == nil {
 			continue
@@ -143,12 +143,19 @@ func (l *Cursors) DelPos(pos int) {
 		if (*prevs[level]).Pos() != pos {
 			continue
 		}
-		*prevs[level] = (*prevs[level]).Next[level]
-		deleted = true
+		deleted := 0
+		next := (*prevs[level]).Next[level]
+		for next != nil && *next.Value == pos { // same pos
+			next = next.Next[level]
+			deleted++
+		}
+		*prevs[level] = next
+		deleted++
+		if deleted > delLen {
+			delLen = deleted
+		}
 	}
-	if deleted {
-		l.length--
-	}
+	l.length -= delLen
 }
 
 // Iterate calls a callback on all cursors

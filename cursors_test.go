@@ -249,3 +249,17 @@ func TestDeleteCursorAtSamePos(t *testing.T) {
 		}
 	}
 }
+
+func TestDeleteSamePos(t *testing.T) {
+	for i := 0; i < 1024; i++ {
+		cursors := NewCursors()
+		for n := 0; n < 128; n++ {
+			c := 0
+			cursors.Add(&c)
+		}
+		cursors.DelPos(0)
+		if cursors.Len() != 0 {
+			t.Fatal("cursors len")
+		}
+	}
+}
