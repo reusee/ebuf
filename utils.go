@@ -1,9 +1,10 @@
 package ebuf
 
 import (
+	crand "crypto/rand"
+	"encoding/binary"
 	"fmt"
 	"math/rand"
-	"time"
 )
 
 var (
@@ -11,7 +12,9 @@ var (
 )
 
 func init() {
-	rand.Seed(time.Now().UnixNano())
+	var seed int64
+	binary.Read(crand.Reader, binary.LittleEndian, &seed)
+	rand.Seed(seed)
 }
 
 // Range represent an integer range
